@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>今天吃什么？</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            background: #fffefc;
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 120px);
+            grid-gap: 15px;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        .cell {
+            width: 120px;
+            height: 80px;
+            background: #f0f0f0;
+            border: 3px solid #ccc;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .active {
+            background: #ffcc80 !important;
+            border-color: #ff9800 !important;
+        }
+        #startBtn {
+            padding: 12px 24px;
+            font-size: 18px;
+            background: #ff5722;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        #result {
+            margin-top: 25px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<h1>今天吃什么？</h1>
+<div class="grid" id="grid">
+    <!-- 格子内容会通过 JavaScript 动态生成 -->
+</div>
+<button id="startBtn">开始抽选！</button>
+<div id="result"></div>
+
+<script>
+    const options = ['粉', '米饭', '青椒酿肉', '丸子'];
+    const grid = document.getElementById('grid');
+    const result = document.getElementById('result');
+
+    // 创建格子
+    options.forEach(option => {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.textContent = option;
+        grid.appendChild(cell);
+    });
+
+    const cells = document.querySelectorAll('.cell');
+    let current = 0;
+    let timer = null;
+    let isRunning = false;
+
+    document.getElementById('startBtn').onclick = () => {
+        if (isRunning) return;
+        isRunning = true;
+        result.textContent = '';
+        let totalSteps = Math.floor(Math.random() * 20) + 30; // 总步数
+        let step = 0;
+
+        if (cells.length === 0) return;
+
+        timer = setInterval(() => {
+            cells.forEach(c => c.classList.remove('active'));
+            cells[current].classList.add('active');
+            current = (current + 1) % cells.length;
+            step++;
+
+            if (step >= totalSteps) {
+                clearInterval(timer);
+                let finalIndex = (current - 1 + cells.length) % cells.length;
+                result.textContent = `今天吃：${options[finalIndex]}！`;
+                isRunning = false;
+            }
+        }, 100); // 每一跳的速度，可调整
+    };
+</script>
+</body>
+</html>
